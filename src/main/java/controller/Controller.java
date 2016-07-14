@@ -1,5 +1,6 @@
 package controller;
 
+import Utils.Lemm;
 import crawler.ReachableCrawler;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;

@@ -40,6 +40,9 @@ public class Lemm {
     }
 
     public static String getLemm(String str) {
-        return getInstance().lemms.get(str);
+        String res = getInstance().lemms.get(str);
+        if (res == null)
+            return str;
+        return res;
     }
 }
