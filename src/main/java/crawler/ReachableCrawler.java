@@ -1,15 +1,15 @@
 package crawler;
 
+import Utils.Corpus;
 import Utils.Lemm;
+import model.Document;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ReachableCrawler extends WebCrawler {
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
@@ -24,35 +24,28 @@ public class ReachableCrawler extends WebCrawler {
     @Override
     public void visit(Page page) {
         String url = page.getWebURL().getURL();
-
         if (page.getParseData() instanceof HtmlParseData) {
             HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             String text = htmlParseData.getText();
-            String html = htmlParseData.getHtml();
-            Document htmlDocument = Jsoup.parse(html);
-            String article = htmlDocument.getElementsByTag("article").get(0).text();
-            if (article.length() > 100) {
-                String[] article_words = article.replaceAll("\\p{P}", " ").split("\\s+");
+            if (text.length() > 100) {
+                List<String> article_words = Arrays.asList(text.replaceAll("\\p{P}", " ").split("\\s+"));
+                article_words.stream().map(e -> e = Lemm.getLemm(e.toLowerCase()));
 
-                for (String s : article_words) {
-                    System.out.print(s);
+                Map<String, Double> counts =
+                        article_words.stream().collect(HashMap<String,Double>::new,
+                                (map, str) -> {
+                                    if(!map.containsKey(str)){
+                                        map.put(str, 1D);
+                                    }else{
+                                        map.put(str, map.get(str) + 1D);
+                                    }
+                                },
+                                HashMap<String,Double>::putAll);
 
-                    s = Lemm.getLemm(s.toLowerCase());
-
-                    System.out.print(" " + s + " ");
-                }
-/*
-                System.out.println("URL: " + url);
-                System.out.println("Article: " + article);
-                Set<WebURL> links = htmlParseData.getOutgoingUrls();
-
-                System.out.println("Text length: " + text.length());
-                System.out.println("Html length: " + html.length());
-                System.out.println("Number of outgoing links: " + links.size());
-*/
-                //            System.out.println(html);
+                Document doc = new Document(url, counts, article_words.size());
+                Corpus corpus = Corpus.getInstance();
+                corpus.addDocument(doc);
             }
         }
     }
-
 }
