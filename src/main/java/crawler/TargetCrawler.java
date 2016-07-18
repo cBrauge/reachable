@@ -10,7 +10,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class ReachableCrawler extends WebCrawler {
+public class TargetCrawler extends WebCrawler {
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp3|zip|gz|:[1-9][0-9]{0,5}))$");
 
@@ -23,7 +23,6 @@ public class ReachableCrawler extends WebCrawler {
     @Override
     public void visit(Page page) {
         String url = page.getWebURL().getURL();
-        System.out.println(url);
         if (page.getParseData() instanceof HtmlParseData) {
             HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             String text = htmlParseData.getText();
@@ -33,7 +32,7 @@ public class ReachableCrawler extends WebCrawler {
             Map<String, Double> counts =
                     article_words.stream().collect(HashMap<String,Double>::new,
                             (map, str) -> {
-                                if(!map.containsKey(str)){
+                                if (!map.containsKey(str)){
                                     map.put(str, 1D);
                                 } else {
                                     map.put(str, map.get(str) + 1D);
@@ -43,7 +42,7 @@ public class ReachableCrawler extends WebCrawler {
 
             Document doc = new Document(url, counts, article_words.size());
             Corpus corpus = Corpus.getInstance();
-            corpus.addDocument(doc);
+            corpus.setTarget(doc);
         }
     }
 }

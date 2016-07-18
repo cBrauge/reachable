@@ -1,7 +1,7 @@
 package controller;
 
-import Utils.Lemm;
 import crawler.ReachableCrawler;
+import crawler.TargetCrawler;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -15,7 +15,7 @@ public class Controller {
 
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
-        config.setMaxDepthOfCrawling(2);
+        config.setMaxDepthOfCrawling(0);
 
         /*
          * Instantiate the controller for this crawl.
@@ -36,6 +36,6 @@ public class Controller {
          * Start the crawl. This is a blocking operation, meaning that your code
          * will reach the line after this only when crawling is finished.
          */
-        controller.start(ReachableCrawler.class, numberOfCrawlers);
+        controller.start(TargetCrawler.class, numberOfCrawlers);
     }
 }
