@@ -1,7 +1,6 @@
 package controller;
 
 import crawler.ReachableCrawler;
-import crawler.TargetCrawler;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -9,33 +8,46 @@ import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
 public class Controller {
+    public static String targetUrl = "";
+    private static String crawlSeed = "";
+    public static Double similarity = 0.1D;
+    private static String crawlStorageFolder = "/data/crawl/root";
+    private static int depthOfCrawl = 1;
+    private static int numberOfCrawlers = 4;
     public static void main(String[] args) throws Exception {
-        String crawlStorageFolder = "/data/crawl/root";
-        int numberOfCrawlers = 4;
 
+        // TODO get it from user
+        numberOfCrawlers = 4;
+        similarity = 0.5D;
+        targetUrl = "http://www.lefigaro.fr/actualite-france/2016/07/18/01016-20160718ARTFIG00196-attentat-de-nice-six-questions-sur-l-enquete-et-l-auteur-de-la-tuerie.php";
+        crawlSeed = "http://www.lemonde.fr/police-justice/article/2016/07/18/attentat-de-nice-le-point-sur-les-avancees-de-l-enquete_4971451_1653578.html";
+        depthOfCrawl = 4;
+
+        analyze(true);
+        analyze(false);
+    }
+
+    /**
+     *
+     * @param isTarget (true) it is the target so we crawl only 0 depth
+     * @throws Exception
+     */
+    private static void analyze(boolean isTarget) throws Exception {
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
-        config.setMaxDepthOfCrawling(0);
+        config.setMaxDepthOfCrawling(isTarget ? 0 : depthOfCrawl);
 
-        /*
-         * Instantiate the controller for this crawl.
-         */
         PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
+
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+        if (isTarget) {
+            config.setMaxOutgoingLinksToFollow(0);
+        }
 
-        /*
-         * For each crawl, you need to add some seed urls. These are the first
-         * URLs that are fetched and then the crawler starts following links
-         * which are found in these pages
-         */
-        controller.addSeed("http://www.lefigaro.fr/international/2016/07/13/01003-20160713ARTFIG00313-theresa-may-espere-rassembler-le-royaume-uni.php");
+        controller.addSeed(isTarget ? targetUrl : crawlSeed);
 
-        /*
-         * Start the crawl. This is a blocking operation, meaning that your code
-         * will reach the line after this only when crawling is finished.
-         */
-        controller.start(TargetCrawler.class, numberOfCrawlers);
+        controller.start(ReachableCrawler.class, numberOfCrawlers);
     }
 }

@@ -1,6 +1,7 @@
 package Utils;
 
 import com.google.common.collect.Maps;
+import controller.Controller;
 import model.Document;
 
 import java.util.ArrayList;
@@ -10,10 +11,10 @@ import java.util.Map;
 
 public class Corpus {
     private int nbDocuments = 0;
-    private Map<String, Double> terms = new HashMap<>();
-    private Map<String, Double> onlyTerms = new HashMap<>();
+    final private Map<String, Double> terms = new HashMap<>();
+    final private Map<String, Double> onlyTerms = new HashMap<>();
     private Document target;
-    private static Corpus ourInstance = new Corpus();
+    final private static Corpus ourInstance = new Corpus();
 
     public static Corpus getInstance() {
         return ourInstance;
@@ -22,19 +23,26 @@ public class Corpus {
     private Corpus() {
     }
 
-    // set target and add it to the corpus
+    /**
+     *
+     * @param doc Document that will be the target
+     */
     public void setTarget(Document doc) {
         target = doc;
         // set universe
         addDocument(target);
     }
 
-    // Add document to corpus then analyze it
+    /**
+     * Add document to corpus and analyze it
+     * @param doc Document that will be added to the corpus
+     */
     public void addDocument(Document doc) {
         nbDocuments++;
 
         for (String term : doc.getTfs().keySet()) {
             Double count = terms.get(term);
+            // Add term to corpus if not in
             if (!terms.containsKey(term)) {
                 terms.put(term, 1D);
                 onlyTerms.put(term, 0D);
@@ -46,10 +54,11 @@ public class Corpus {
         analyze(doc);
     }
 
-    // analyse document and then calculate tfidf
+    /**
+     * Calculate idf, add missing keys to the map, recalculate target, calculate cos
+     * @param doc Document that will be analyzed
+     */
     private void analyze(Document doc) {
-        System.out.println(doc.getUrl());
-
         // calculate idf
         for (Map.Entry<String, Double> entry : doc.getTfs().entrySet()) {
             Double idf = Math.log(nbDocuments / terms.get(entry.getKey())) + 1;
@@ -67,15 +76,23 @@ public class Corpus {
             Double idf = Math.log(nbDocuments / terms.get(entry.getKey())) + 1;
             targetTmp.put(entry.getKey(), entry.getValue() * idf);
         }
+
         // pass to vector
-        List<Double> listCurrent = new ArrayList<Double>(doc.getTfs().values());
-        List<Double> listTarget = new ArrayList<Double>(targetTmp.values());
+        List<Double> listCurrent = new ArrayList<>(doc.getTfs().values());
+        List<Double> listTarget = new ArrayList<>(targetTmp.values());
 
         Double similarity = calculateCos(listCurrent, listTarget);
 
-        System.out.println(similarity);
+        if (Controller.similarity <= similarity)
+            System.out.println(doc.getUrl() + ": " + similarity);
     }
 
+    /**
+     *
+     * @param listCurrent Vector of current's weight
+     * @param listTarget Vector of target's weight
+     * @return Cosine of similarity between two documents
+     */
     private Double calculateCos(List<Double> listCurrent, List<Double> listTarget) {
         Double num = 0d;
         for (int i = 0; i < listCurrent.size(); i++) {
