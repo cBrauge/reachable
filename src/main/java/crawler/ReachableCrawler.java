@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 public class ReachableCrawler extends WebCrawler {
     private static Boolean targetIsSet = false;
+    private Boolean displayAll;
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp3|zip|gz|:[1-9][0-9]{0,5}))$");
 

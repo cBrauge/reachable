@@ -83,8 +83,8 @@ public class Corpus {
 
         Double similarity = calculateCos(listCurrent, listTarget);
 
-        if (Controller.similarity <= similarity)
-            System.out.println(doc.getUrl() + ": " + similarity);
+        if (Controller.similarity <= similarity || Controller.displayAll)
+            System.out.println(similarity + ": " + doc.getUrl());
     }
 
     /**
