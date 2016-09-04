@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class ReachableCrawler extends WebCrawler {
     private static Boolean targetIsSet = false;
-    private Boolean displayAll;
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp3|zip|gz|:[1-9][0-9]{0,5}))$");
 
@@ -29,12 +28,15 @@ public class ReachableCrawler extends WebCrawler {
 
     @Override
     public void visit(Page page) {
-        if (page.getParseData() instanceof HtmlParseData) {
-            HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-            String text = htmlParseData.getText();
-            List<String> article_words = Arrays.asList(text.replaceAll("\\p{P}", " ").split("\\s+"));
-            addToCorpus(article_words, page.getWebURL().getURL());
-        }
+        try {
+            if (page.getParseData() instanceof HtmlParseData) {
+                HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
+                String text = htmlParseData.getText();
+                List<String> article_words = Arrays.asList(text.replaceAll("\\p{P}", " ").split("\\s+"));
+                addToCorpus(article_words, page.getWebURL().getURL());
+            }
+        } catch (Exception e)
+        {}
     }
 
     /**

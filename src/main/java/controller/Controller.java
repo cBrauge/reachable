@@ -8,7 +8,6 @@ import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
 
-import java.io.Console;
 import java.io.File;
 
 public class Controller {
@@ -24,7 +23,6 @@ public class Controller {
         Cli cli = new Cli(args);
         cli.parse();
 
-        // TODO get it from user
         numberOfCrawlers = cli.crawlers;
         similarity = cli.similarity;
         targetUrl = cli.target;
@@ -34,12 +32,12 @@ public class Controller {
         // Create folder for storage
         new File(crawlStorageFolder).mkdirs();
 
-        System.out.print("Start analyze target ...");
+        System.out.print("Start analyze target ...\n");
         analyze(true);
-        System.out.print("End analyze target ...");
-        System.out.print("Start crawling");
+        System.out.print("End analyze target ...\n");
+        System.out.print("Start crawling\n");
         analyze(false);
-        System.out.print("End crawling");
+        System.out.print("End crawling\n");
     }
 
     /**
