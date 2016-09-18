@@ -1,0 +1,22 @@
+Depuis le dossier jar on peut lancer le jar comme suit.
+
+Example:
+
+java -jar reachable.jar -t
+http://sport24.lefigaro.fr/football/transferts/fil-info/belhanda-a-nice-822918
+-b
+http://sport24.lefigaro.fr/football/transferts/fil-info/belhanda-a-nice-822918
+-c 3 -s 0.5 -d 2 2> /dev/null
+
+-t: précise la page qui sera la cible, celle dont on veut les ressemblances.
+-b: la page depuis laquelle le crawling va débuter
+-c: le nombre de crawlers qui vont être utilisés
+-s: le degré de similarité
+-d: la profondeur a laquelle on veut crawl
+-a: affiche tout les liens meme si ils ne sont pas supérieurs au degré de
+similatité
+
+Note:
+On redirige la sortie d'erreur vers null car les bibliothéques utilisés pour le
+crawling throw sur certaines pages (par exemple celles avec des ports dans
+l'url, ou encore quand le check des headers ne marchent pas).
